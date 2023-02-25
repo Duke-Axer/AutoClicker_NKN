@@ -1,6 +1,6 @@
 import pyautogui
 import os
-
+import csv
 
 
 
@@ -171,7 +171,7 @@ def modifyDict():
         # Cofnij
         elif inputMenu == "0":
             next_ = False
-
+# Dodawanie... plików txt z listą kroków do wykonania i lista wykorzystywanych obiektów
 def modifyFiles(path):
     next_ = True
     while next_:
@@ -195,6 +195,57 @@ def modifyFiles(path):
              while not intiger(inputMenu)[1]:
                  print("Opcja: " + inputMenu + " nie istnieje, proszę wybrać ponownie\n")
                  inputMenu = input()
+         if int(inputMenu) <= 0:
+            if inputMenu == "0":
+                next_ = False
+            elif inputMenu == "-1":
+                next_2 = True
+                while next_2:
+                    print("Wpisz nazwę sekwencji")
+                    inputMenu = input()
+                    next_2 = False
+                    for i in listDir:
+                        if i == inputMenu:
+                            print("Taka nazwa już istnieje")
+                            next_2 = True
+                if not next_2:
+                    print("Tworzę nowy folder: " + inputMenu)
+                    with open(inputMenu + ".csv", "w", encoding='utf-8') as file:
+                        writer = csv.writer(file, delimiter=',')
+                        writer.writerow(["ID", "Name", "Time", "Number", "Speed", "Mouse"])
+            elif inputMenu == "-2":
+                next_1 = True
+                next_2 = True
+                while next_1:
+                    print("Wybierz plik")
+                    i = 1
+                    for var in listDir:
+                        print(str(i) + " --> " + str(var))
+                        i = i + 1
+                    print("0 --> Cofnij")
+                    inputMenu = input()
+                    if int(inputMenu) <= len(listDir) and int(inputMenu) > 0:
+                        print("Wybrano plik: " + str(listDir[int(inputMenu) - 1]))
+                    elif inputMenu == "0":
+                        next_1 = False
+                        next_2 = False
+
+                while next_2:
+                    print("Wpisz nazwę\n"
+                          "0 --> Cofnij")
+                    next_2 = False
+                    inputName = input()
+                    if inputName != "0":
+                        for i in listDir:
+                            if inputMenu == i:
+                                print("Taki plik już istnieje")
+                                next_2 = True
+                                print("Wybierz inną nazwę")
+                        if not next_2:
+                            print("Zmieniam nazwę pliku na: " + inputName)
+                            os.rename(listDir[int(inputMenu) - 1], inputName)
+                            next_2 = False
+                next_ = True
 
 
 
