@@ -3,7 +3,6 @@ import os
 import csv
 
 
-
 def menu(path):
     path = path + chr(92) + "Data"
     while True:
@@ -27,11 +26,14 @@ def menu(path):
                   "2 --> Modyfikacja\n"
                   "0 --> Exit")
 
+
 def clearCmd():
     command = 'clear'
     if os.name in ('nt', 'dos'):  # If Machine is running on Windows, use cls
         command = 'cls'
     os.system(command)
+
+
 def firstTest(path):
     print(path)
     pathGeneral = path + chr(92) + "Data"
@@ -41,7 +43,8 @@ def firstTest(path):
         os.mkdir(pathGeneral)
     print(os.getcwd())
 
-#Otwieranie folderów
+
+# Otwieranie folderów
 def openDict():
     clearCmd()
     print("Dodawanie, usuwanie i modyfikacja plików\n"
@@ -57,6 +60,8 @@ def openDict():
           "0 --> Cofnij")
     inputMenu = input()
     pass
+
+
 # Dodawanie, usuwanie, zmieniane nazwy folderów
 def modifyDict():
     path = os.getcwd()
@@ -69,7 +74,7 @@ def modifyDict():
         i = 1
         for var in listDir:
             print(str(i) + " --> " + str(var))
-            i = i+1
+            i = i + 1
         print("-1 -> Utwórz nowy\n"
               "-2 -> Zmień nazwę\n"
               "-3 -> Usuń\n"
@@ -82,7 +87,7 @@ def modifyDict():
 
         # Wybierz folder
         if int(inputMenu) <= len(listDir) and int(inputMenu) > 0:
-            print( "Wybrano folder: " + str(listDir[int(inputMenu) - 1]) )
+            print("Wybrano folder: " + str(listDir[int(inputMenu) - 1]))
             modifyFiles(os.chdir(path + chr(92) + str(listDir[int(inputMenu) - 1])))
         # Utwórz nowy
         elif inputMenu == "-1":
@@ -110,7 +115,7 @@ def modifyDict():
                 i = 1
                 for var in listDir:
                     print(str(i) + " --> " + str(var) + "\n")
-                    i = i+1
+                    i = i + 1
                 print("0 --> Cofnij")
                 inputMenu = input()
                 if int(inputMenu) <= len(listDir) and int(inputMenu) > 0:
@@ -171,31 +176,33 @@ def modifyDict():
         # Cofnij
         elif inputMenu == "0":
             next_ = False
+
+
 # Dodawanie... plików txt z listą kroków do wykonania i lista wykorzystywanych obiektów
 def modifyFiles(path):
     next_ = True
     while next_:
-         clearCmd()
-         print("Dodawanie, usuwanie i modyfikacja sekwencji\n"
-               "Wybierz plik lub utwórz nowy")
-         listDir = os.listdir(path)
+        clearCmd()
+        print("Dodawanie, usuwanie i modyfikacja sekwencji\n"
+              "Wybierz plik lub utwórz nowy")
+        listDir = os.listdir(path)
 
-         i = 1
-         for var in listDir:
-             print(str(i) + " --> " + str(var))
-             i = i + 1
-         print("-1 -> Utwórz nowy\n"
-               "-2 -> Zmień nazwę\n"
-               "-3 -> Usuń\n"
-               "-4 -> Otwórz\n"
-               "-9 -> Obiekty\n"
-               "0 --> Cofnij")
-         inputMenu = input()
-         if not intiger(inputMenu)[1]:
-             while not intiger(inputMenu)[1]:
-                 print("Opcja: " + inputMenu + " nie istnieje, proszę wybrać ponownie\n")
-                 inputMenu = input()
-         if int(inputMenu) <= 0:
+        i = 1
+        for var in listDir:
+            print(str(i) + " --> " + str(var))
+            i = i + 1
+        print("-1 -> Utwórz nowy\n"
+              "-2 -> Zmień nazwę\n"
+              "-3 -> Usuń\n"
+              "-9 -> Obiekty\n"
+              "0 --> Cofnij")
+        inputMenu = input()
+        if not intiger(inputMenu)[1]:
+            while not intiger(inputMenu)[1]:
+                print("Opcja: " + inputMenu + " nie istnieje, proszę wybrać ponownie\n")
+                inputMenu = input()
+        if int(inputMenu) <= 0:
+
             if inputMenu == "0":
                 next_ = False
             elif inputMenu == "-1":
@@ -226,6 +233,7 @@ def modifyFiles(path):
                     inputMenu = input()
                     if int(inputMenu) <= len(listDir) and int(inputMenu) > 0:
                         print("Wybrano plik: " + str(listDir[int(inputMenu) - 1]))
+                        next_1 = False
                     elif inputMenu == "0":
                         next_1 = False
                         next_2 = False
@@ -243,9 +251,74 @@ def modifyFiles(path):
                                 print("Wybierz inną nazwę")
                         if not next_2:
                             print("Zmieniam nazwę pliku na: " + inputName)
-                            os.rename(listDir[int(inputMenu) - 1], inputName)
+                            os.rename(listDir[int(inputMenu) - 1], inputName + ".csv")
                             next_2 = False
                 next_ = True
+            elif inputMenu == "-3":
+                next_1 = True
+                while next_1:
+                    print("Wybierz sekwencje do usunięcia")
+                    i = 1
+                    listDir = os.listdir(path)
+                    for var in listDir:
+                        print(str(i) + " --> " + str(var))
+                        i = i + 1
+                    print("0 --> Cofnij")
+                    inputMenu = input()
+                    if int(inputMenu) <= len(listDir) and int(inputMenu) > 0:
+                        print("Wybrano sekwencje: " + str(listDir[int(inputMenu) - 1]))
+                        os.remove(str(listDir[int(inputMenu) - 1]))
+                    elif inputMenu == "0":
+                        next_1 = False
+            # Powinien istnieć plik obiekty.csv
+            elif inputMenu == "-9":
+                print("dostępne obiekty")
+                obiekty(path)
+
+
+def obiekty(path):
+    # Czy plik obiekty.csv istnieje
+    listDir = os.listdir(path)
+    next_1 = True
+    i = 1
+    for var in listDir:
+        if var == "obiekty.csv":
+            next_1 = False
+            break
+        i = i + 1
+    if next_1:
+        print("Brak pliku csv")
+    # Wyświetenie obiektów ID,Name,X,Y
+    next_1 = True
+    while next_1:
+        with open("obiekty.csv") as csv_file:
+            reader = csv.reader(csv_file, delimiter=",")
+            obiekt = []
+            for line in reader:
+                try:
+                    print(line[0] + " --> " + line[1] + " -- " + line[2] + " -- " + line[3])
+                    obiekt.append(line)
+                except IndexError:
+                    continue
+            print("0 --> Cofnij\n"
+                  "-1 -> Utwórz nowy\n"
+                  "-2 -> modyfikuj\n"
+                  "-3 -> Usuń\n")
+        inputMenu = input()
+        if int(inputMenu) <= 0 and int(inputMenu) >= -3:
+            if inputMenu == "0":
+                next_1 = False
+            elif inputMenu == "-1":
+                # Dodaje obiekt na pierwszym wolnym ID liczącz o 1
+                print("tworzenie nowego obiektu")
+            elif inputMenu == "-2":
+                # powinno sprawdzić czy jakieś sekwencje wykorzystują dany obiekt
+                print("usuwanie obiektu")
+            elif inputMenu == "-3":
+                # zmienia Name, x lub y
+                print("modyfikacja")
+            else:
+                print("bład")
 
 
 
@@ -263,11 +336,7 @@ def intiger(input_):
     return input_, var
 
 
-
 if __name__ == "__main__":
     path = os.getcwd()
     firstTest(path)
     menu(path)
-
-
-
