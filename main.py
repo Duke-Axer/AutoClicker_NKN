@@ -312,11 +312,11 @@ def obiekty(path):
                 # Dodaje obiekt na pierwszym wolnym ID liczącz o 1
                 print("tworzenie nowego obiektu")
             elif inputMenu == "-2":
-                # powinno sprawdzić czy jakieś sekwencje wykorzystują dany obiekt
-                print("usuwanie obiektu")
-            elif inputMenu == "-3":
                 # zmienia Name, x lub y
                 print("modyfikacja")
+            elif inputMenu == "-3":
+                # powinno sprawdzić czy jakieś sekwencje wykorzystują dany obiekt
+                print("usuwanie obiektu")
             else:
                 print("bład")
 
