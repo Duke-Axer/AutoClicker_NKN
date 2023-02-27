@@ -104,6 +104,11 @@ def modifyDict():
                 if not next_:
                     print("Tworzę nowy folder: " + inputMenu)
                     os.mkdir(path + chr(92) + inputMenu)
+                    with open(inputMenu + "\obiekty.csv", "w", encoding='utf-8', newline='') as file:
+                        writer = csv.writer(file, delimiter=',', quotechar='"', quoting=csv.QUOTE_MINIMAL)
+                        writer.writerow(["ID", "Name", "X", "Y"])
+                        writer.writerow(["1"])
+
             next_ = True
         # Zmień nazwę
         elif inputMenu == "-2":
@@ -217,8 +222,8 @@ def modifyFiles(path):
                             next_2 = True
                 if not next_2:
                     print("Tworzę nowy folder: " + inputMenu)
-                    with open(inputMenu + ".csv", "w", encoding='utf-8') as file:
-                        writer = csv.writer(file, delimiter=',')
+                    with open(inputMenu + ".csv", "w", encoding='utf-8', newline='') as file:
+                        writer = csv.writer(file, delimiter=',', quotechar='"', quoting=csv.QUOTE_MINIMAL)
                         writer.writerow(["ID", "Name", "Time", "Number", "Speed", "Mouse"])
             elif inputMenu == "-2":
                 next_1 = True
@@ -311,9 +316,12 @@ def obiekty(path):
             elif inputMenu == "-1":
                 # Dodaje obiekt na pierwszym wolnym ID liczącz o 1
                 print("tworzenie nowego obiektu")
+                addObiect(obiekt)
+
             elif inputMenu == "-2":
                 # zmienia Name, x lub y
                 print("modyfikacja")
+
             elif inputMenu == "-3":
                 # powinno sprawdzić czy jakieś sekwencje wykorzystują dany obiekt
                 print("usuwanie obiektu")
@@ -323,6 +331,29 @@ def obiekty(path):
 
 
 
+def addObiect(obiekt):
+    print("tworzenie nowego obiektu")
+    i = 0
+    while True:
+        try:
+            print(str(obiekt[i][1]))
+
+        except IndexError:
+            print("Zapisanie w lini nr " + str(i))
+            break
+
+        i = i+1
+    if len(obiekt) == i:
+        obiekt.append([i, "aaa", "1", "2"])
+        print(obiekt)
+    else:
+        obiekty = []
+        for var in obiekt:
+            if var != str(i):
+                obiekty.append(var)
+            else:
+                obiekty.append([i, "aaa", "1", "2"])
+        print(obiekty)
 def close():
     exit()
 
