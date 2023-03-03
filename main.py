@@ -334,26 +334,36 @@ def obiekty(path):
 def addObiect(obiekt):
     print("tworzenie nowego obiektu")
     i = 0
-    while True:
-        try:
-            print(str(obiekt[i][1]))
 
-        except IndexError:
+    while True:
+        if obiekt[i][1]:
+            pass
+        else:
             print("Zapisanie w lini nr " + str(i))
             break
+        i = i + 1
 
-        i = i+1
     if len(obiekt) == i:
-        obiekt.append([i, "aaa", "1", "2"])
-        print(obiekt)
+        obiekt.append([i, "aa123123a", "1", "2"])
+        saveToCSV(obiekt)
     else:
         obiekty = []
         for var in obiekt:
-            if var != str(i):
+            if var[0] != str(i):
                 obiekty.append(var)
             else:
-                obiekty.append([i, "aaa", "1", "2"])
-        print(obiekty)
+                obiekty.append([i, "aaa1", "1", "2"])
+        saveToCSV(obiekty)
+
+
+def saveToCSV(obiekty):
+    with open("obiekty.csv", "w", encoding='utf-8', newline='') as file:
+        writer = csv.writer(file, delimiter=',', quotechar='"', quoting=csv.QUOTE_MINIMAL)
+        for i in obiekty:
+            writer.writerow([i[0], i[1], i[2], i[3]])
+
+
+
 def close():
     exit()
 
