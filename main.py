@@ -299,23 +299,67 @@ def modifySek(sek):
     while True:
         clearCmd()
         print("Dodawanie, usuwanie i modyfikacja sekwencji: ", sek)
-        with open(sek) as csv_file:
-            reader = csv.reader(csv_file, delimiter=",")
-            list_sek = []
-            # "ID", "Name", "Time", "Number", "Speed", "Mouse"
-            print("ID --> Name -- Time -- Number -- Speed -- Mouse")
-            for line in reader:
-                print(line[0] + " --> " + line[1] + " -- " + line[2] + " -- " +
-                      line[3] + " -- " + line[4] + " -- " + line[5])
-                list_sek.append(line)
+        print("ID --> Name -- Time -- Number -- Speed -- Mouse")
+        list_sek = listSek(sek)
+        for line in list_sek:
+            print(line[0] + " --> " + line[1] + " -- " + line[2] + " -- " +
+                  line[3] + " -- " + line[4] + " -- " + line[5])
 
-            print("0 --> Cofnij\n"
-                  "-1 -> Utwórz nowy\n"
-                  "-2 -> modyfikuj\n"
-                  "-3 -> zmień kolejność\n"
-                  "-4 -> Usuń\n")
+        print("0 --> Cofnij\n"
+              "-1 -> Utwórz nowy\n"
+              "-2 -> modyfikuj\n"
+              "-3 -> zmień kolejność\n"
+              "-4 -> Usuń\n")
         inputMenu = input()
+        if int(inputMenu) <= 0 and int(inputMenu) >= -4:
+            if inputMenu == "0":
+                break
+            elif inputMenu == "-1":
+                pass
 
+
+# Dodawanie elementu w sekwencji
+def addItemInSek(sek):
+    while True:
+        list_obiect = listObiects()
+        list_sek = listSek(sek)
+        while True:
+            for line in list_obiect:
+                print(line[0] + " --> " + line[1] + " -- " + line[2] + " -- " + line[3])
+            print("Wybierz obkiekt")
+            obiect_id = input()
+
+            if int(obiect_id) <= 1 and int(obiect_id) >= int(list_obiect[-1][0]):
+                if list_obiect[-1][1] == "":
+                    print("Wybrany obiekt jest usuniety")
+                    continue
+                print("Wybrano obiekt:")
+                print(list_obiect[int(obiect_id)][0] + " --> " + list_obiect[int(obiect_id)][1] + " -- " +
+                      list_obiect[int(obiect_id)][2] + " -- " + list_obiect[int(obiect_id)][3])
+                
+
+
+
+# Zwraca listę elementów w sekwencji
+def listSek(sek):
+    # Zapisanie "ID", "Name", "Time", "Number", "Speed", "Mouse"
+    with open(sek) as csv_file:
+        reader = csv.reader(csv_file, delimiter=",")
+        list_sek = []
+        for line in reader:
+            list_sek.append(line)
+    return list_sek
+
+
+# Zwraca listę obiektków
+def listObiects():
+    # Zapisanie obiektów ID,Name,X,Y
+    with open("obiekty.csv") as csv_file:
+        reader = csv.reader(csv_file, delimiter=",")
+        list_obiekt = []
+        for line in reader:
+            list_obiekt.append(line)
+    return list_obiekt
 
 
 def obiekty(path):
@@ -334,19 +378,14 @@ def obiekty(path):
 
     # Wyświetenie obiektów ID,Name,X,Y
     while True:
-        with open("obiekty.csv") as csv_file:
-            reader = csv.reader(csv_file, delimiter=",")
-            obiekt = []
-            for line in reader:
-                try:
-                    print(line[0] + " --> " + line[1] + " -- " + line[2] + " -- " + line[3])
-                    obiekt.append(line)
-                except IndexError:
-                    continue
-            print("0 --> Cofnij\n"
-                  "-1 -> Utwórz nowy\n"
-                  "-2 -> modyfikuj\n"
-                  "-3 -> Usuń\n")
+        list_obiekt = listObiects()
+        for line in list_obiekt:
+            print(line[0] + " --> " + line[1] + " -- " + line[2] + " -- " + line[3])
+
+        print("0 --> Cofnij\n"
+              "-1 -> Utwórz nowy\n"
+              "-2 -> modyfikuj\n"
+              "-3 -> Usuń\n")
         inputMenu = input()
 
         if int(inputMenu) <= 0 and int(inputMenu) >= -3:
@@ -355,7 +394,7 @@ def obiekty(path):
             elif inputMenu == "-1":
                 # Dodaje obiekt na pierwszym wolnym ID liczącz od 1
                 print("tworzenie nowego obiektu")
-                addObiect(obiekt)
+                addObiect(list_obiekt)
 
             elif inputMenu == "-2":
                 # zmienia Name, x lub y
