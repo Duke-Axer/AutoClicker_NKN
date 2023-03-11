@@ -289,8 +289,8 @@ def modifyFiles(path):
                 obiekty(path)
 
         elif int(inputMenu) <= len(listDir):
-            print("Wybrano sekwencję ", listDir[int(inputMenu)])
-            modifySek(listDir[int(inputMenu)])
+            print("Wybrano sekwencję ", listDir[int(inputMenu) - 1])
+            modifySek(listDir[int(inputMenu) - 1])
         else:
             print("Taka opcja nie istnieje: ", inputMenu)
 
@@ -299,7 +299,7 @@ def modifySek(sek):
     while True:
         clearCmd()
         print("Dodawanie, usuwanie i modyfikacja sekwencji: ", sek)
-        print("ID --> Name -- Time -- Number -- Speed -- Mouse")
+        # print("ID --> Name -- Time -- Number -- Speed -- Mouse")
         list_sek = listSek(sek)
         for line in list_sek:
             print(line[0] + " --> " + line[1] + " -- " + line[2] + " -- " +
@@ -315,7 +315,7 @@ def modifySek(sek):
             if inputMenu == "0":
                 break
             elif inputMenu == "-1":
-                pass
+                addItemInSek(sek)
 
 
 # Dodawanie elementu w sekwencji
@@ -323,20 +323,104 @@ def addItemInSek(sek):
     while True:
         list_obiect = listObiects()
         list_sek = listSek(sek)
+        print(list_sek)
+        # ID --> Name -- Time -- Number -- Speed -- Mouse
         while True:
             for line in list_obiect:
                 print(line[0] + " --> " + line[1] + " -- " + line[2] + " -- " + line[3])
-            print("Wybierz obkiekt")
+            print("Wybierz obiekt")
             obiect_id = input()
 
-            if int(obiect_id) <= 1 and int(obiect_id) >= int(list_obiect[-1][0]):
+            if int(obiect_id) >= 1 and int(obiect_id) <= int(list_obiect[-1][0]):
                 if list_obiect[-1][1] == "":
                     print("Wybrany obiekt jest usuniety")
                     continue
-                print("Wybrano obiekt:")
-                print(list_obiect[int(obiect_id)][0] + " --> " + list_obiect[int(obiect_id)][1] + " -- " +
-                      list_obiect[int(obiect_id)][2] + " -- " + list_obiect[int(obiect_id)][3])
-                
+                else:
+                    print("Wybrano obiekt:")
+                    print(list_obiect[int(obiect_id)][0] + " --> " + list_obiect[int(obiect_id)][1] + " -- " +
+                          list_obiect[int(obiect_id)][2] + " -- " + list_obiect[int(obiect_id)][3])
+                while True:
+                    print("Określ czas trwania, liczbę kliknięć, szybkość, przycisk myszki"
+                          "\n0 Dla czasu trwania oznacza zakończenie po x kliknięciach"
+                          "\n0 Dla liczby kliknięć oznacza zakończenie po x czasie")
+                    var_input = [None, None, None, None]
+                    var_input[0] = write_arg_in_item_sek(0)
+                    var_input[1] = write_arg_in_item_sek(1)
+                    var_input[2] = write_arg_in_item_sek(2)
+                    var_input[3] = write_arg_in_item_sek(3)
+
+                    # Zmiana podanych wartości
+                    while True:
+                        print("1 --> Czas trwania: ", str(var_input[0]), "\n"
+                              "2 --> Liczba kliknięć: ", str(var_input[1]), "\n"
+                              "3 --> Szybkość: ", str(var_input[2]), "\n"
+                              "4 --> Przycisk myszki: ", str(var_input[3]), "\n")
+                        if var_input[0] == "0" and var_input[1] == "0":
+                            print("Czas trwania i liczba kliknięć nie mogą mieć oba 0\n"
+                                  "Wybierz co zmienić: ")
+                            var = input()
+                            var_input[int(var) - 1] = write_arg_in_item_sek(int(var) - 1)
+                        else:
+                            print("0 --> Zapisz\n")
+                            while True:
+                                var = input()
+                                if intiger(var, is_integer=True, min_=1, max_=4)[1]:
+                                    var_input[int(var) - 1] = write_arg_in_item_sek(int(var) - 1)
+                                elif var == "0":
+                                    break
+                        break
+
+                        # stworzenie wiersza
+                    print(list_sek[-1][0])
+                    print(list_obiect[int(obiect_id)][1])
+                    print(var_input[0])
+                    print(var_input[1])
+                    print(var_input[2])
+                    print(var_input[3])
+
+                    num = 0
+                    for i in list_sek:
+                        num = num + 1
+
+                    # Zapisanie danych obiect_id i var_input[0:3] do pliku na ostatnim id
+                    list_sek.append([num, list_obiect[int(obiect_id)][1], var_input[0],
+                                     var_input[1], var_input[2], var_input[3]])
+                    print(list_sek)
+
+                    for i in list_sek:
+                        print(i)
+                    break
+
+
+def write_arg_in_item_sek(var):
+    while True:
+        if var == 0:
+            print("Określ czas trwania")
+        elif var == 1:
+            print("Określ liczbę kliknięć")
+        elif var == 2:
+            print("Określ szybkość")
+        elif var == 3:
+            print("Określ przycisk myszki\n"
+                  "1 --> Lewy"
+                  "2 --> Prawy")
+        var_input = input()
+        if var == 0 or var == 2:
+            if intiger(var_input, is_integer=False, min_=0)[1]:
+                return var_input
+        elif var == 1:
+            if intiger(var_input, is_integer=True, min_=0)[1]:
+                return var_input
+
+        elif var == 3:
+            if intiger(var_input, is_integer=True, min_=1, max_=2)[1]:
+                return var_input
+        else:
+            print("Bład: ", var_input)
+
+
+
+
 
 
 
@@ -518,12 +602,27 @@ def close():
     exit()
 
 
-def intiger(input_):
+def intiger(input_, *, is_integer=True, min_=None, max_=None):
     var = True
+
     try:
-        int(input_)
+        input_ = float(input_)
     except ValueError:
-        var = False
+        return input_, False
+
+    if is_integer:
+        if input_ != int(input_):
+            return input_, False
+        else:
+            input_ = int(input_)
+
+    if min_ is not None:
+        if input_ < min_:
+            var = False
+
+    if max_ is not None:
+        if input_ > max_:
+            var = False
     return input_, var
 
 
