@@ -80,8 +80,8 @@ def modifyDict():
               "-3 -> Usuń\n"
               "0 --> Cofnij")
         inputMenu = input()
-        if not intiger(inputMenu)[1]:
-            while not intiger(inputMenu)[1]:
+        if not integer(inputMenu)[1]:
+            while not integer(inputMenu)[1]:
                 print("Opcja: " + inputMenu + " nie istnieje, proszę wybrać ponownie\n")
                 inputMenu = input()
 
@@ -200,8 +200,8 @@ def modifyFiles(path):
               "-9 -> Obiekty\n"
               "0 --> Cofnij")
         inputMenu = input()
-        if not intiger(inputMenu)[1]:
-            while not intiger(inputMenu)[1]:
+        if not integer(inputMenu)[1]:
+            while not integer(inputMenu)[1]:
                 print("Opcja: " + inputMenu + " nie istnieje, proszę wybrać ponownie\n")
                 inputMenu = input()
         if int(inputMenu) <= 0:
@@ -301,9 +301,8 @@ def modifySek(sek):
         print("Dodawanie, usuwanie i modyfikacja sekwencji: ", sek)
         # print("ID --> Name -- Time -- Number -- Speed -- Mouse")
         list_sek = listSek(sek)
-        for line in list_sek:
-            print(line[0] + " --> " + line[1] + " -- " + line[2] + " -- " +
-                  line[3] + " -- " + line[4] + " -- " + line[5])
+
+        print_two_dimensional_list(list_sek)
 
         print("0 --> Cofnij\n"
               "-1 -> Utwórz nowy\n"
@@ -320,15 +319,19 @@ def modifySek(sek):
 
 # Dodawanie elementu w sekwencji
 def addItemInSek(sek):
+    """Pozwala na wpisanie parametrów sekwencji. Wywołuje fukcję zapisu do pliku csv
+    parametry: ID, Name, Time, Number, Speed, Mouse
+
+    :param sek: Ścieżka do pliku z sekwencjami
+    :return:
+    """
     while True:
         list_obiect = listObiects()
         list_sek = listSek(sek)
-        print(list_sek)
-        # ID --> Name -- Time -- Number -- Speed -- Mouse
         while True:
-            for line in list_obiect:
-                print(line[0] + " --> " + line[1] + " -- " + line[2] + " -- " + line[3])
+            print_two_dimensional_list(list_obiect)
             print("Wybierz obiekt")
+
             obiect_id = input()
 
             if int(obiect_id) >= 1 and int(obiect_id) <= int(list_obiect[-1][0]):
@@ -344,10 +347,8 @@ def addItemInSek(sek):
                           "\n0 Dla czasu trwania oznacza zakończenie po x kliknięciach"
                           "\n0 Dla liczby kliknięć oznacza zakończenie po x czasie")
                     var_input = [None, None, None, None]
-                    var_input[0] = write_arg_in_item_sek(0)
-                    var_input[1] = write_arg_in_item_sek(1)
-                    var_input[2] = write_arg_in_item_sek(2)
-                    var_input[3] = write_arg_in_item_sek(3)
+                    for i in range(4):
+                        var_input[i] = write_arg_in_item_sek(i)
 
                     # Zmiana podanych wartości
                     while True:
@@ -364,32 +365,69 @@ def addItemInSek(sek):
                             print("0 --> Zapisz\n")
                             while True:
                                 var = input()
-                                if intiger(var, is_integer=True, min_=1, max_=4)[1]:
+                                if integer(var, is_integer=True, min_=1, max_=4)[1]:
                                     var_input[int(var) - 1] = write_arg_in_item_sek(int(var) - 1)
                                 elif var == "0":
                                     break
                         break
 
-                        # stworzenie wiersza
-                    print(list_sek[-1][0])
-                    print(list_obiect[int(obiect_id)][1])
-                    print(var_input[0])
-                    print(var_input[1])
-                    print(var_input[2])
-                    print(var_input[3])
-
-                    num = 0
-                    for i in list_sek:
-                        num = num + 1
-
                     # Zapisanie danych obiect_id i var_input[0:3] do pliku na ostatnim id
-                    list_sek.append([num, list_obiect[int(obiect_id)][1], var_input[0],
+                    list_sek.append([str(len(list_sek)), list_obiect[int(obiect_id)][1], var_input[0],
                                      var_input[1], var_input[2], var_input[3]])
-                    print(list_sek)
+                    save_to_csv(sek, list_sek)
 
-                    for i in list_sek:
-                        print(i)
                     break
+            break
+        break
+
+
+def print_two_dimensional_list(list_2d):
+    """Wyświetla tabelę stworzoną z 2-wymiarowej listy
+
+    :param list_2d: lista do wyświetlenia
+    """
+    len_arg = []
+    for line in list_2d:
+        value_number = 0
+
+        for arg in line:
+            try:
+                if len(arg) > len_arg[value_number]:
+                    len_arg[value_number] = len(arg)
+            except:
+                len_arg.append(len(arg))
+            finally:
+                value_number += 1
+
+    curret_line = str()
+    for line in list_2d:
+        value_number = 0
+        len_last_arg = int()
+
+        for arg in line:
+            if value_number == 0:
+                curret_line = arg
+
+            elif value_number == 1:
+                curret_line = curret_line + " -" + "-" * (len_arg[value_number - 1] - len_last_arg) + ">" + " " + arg
+            else:
+                curret_line = curret_line + "-" * (len_arg[value_number - 1] - len_last_arg) + " " + arg
+            len_last_arg = len(arg)
+            value_number += 1
+        print(curret_line)
+
+
+
+def save_to_csv(csv_file, lines):
+    """Zapisuje listę do pliku csv
+
+    :param csv_file: Ścieżka pliku csv
+    :param lines: lista dwuwymiarowa określająca numer wiersza i numer kolumny
+    """
+    with open(csv_file, "w", encoding='utf-8', newline='') as file:
+        writer = csv.writer(file, delimiter=',', quotechar='"', quoting=csv.QUOTE_MINIMAL)
+        for line in lines:
+            writer.writerow(line)
 
 
 def write_arg_in_item_sek(var):
@@ -406,21 +444,17 @@ def write_arg_in_item_sek(var):
                   "2 --> Prawy")
         var_input = input()
         if var == 0 or var == 2:
-            if intiger(var_input, is_integer=False, min_=0)[1]:
+            if integer(var_input, is_integer=False, min_=0)[1]:
                 return var_input
         elif var == 1:
-            if intiger(var_input, is_integer=True, min_=0)[1]:
+            if integer(var_input, is_integer=True, min_=0)[1]:
                 return var_input
 
         elif var == 3:
-            if intiger(var_input, is_integer=True, min_=1, max_=2)[1]:
+            if integer(var_input, is_integer=True, min_=1, max_=2)[1]:
                 return var_input
         else:
             print("Bład: ", var_input)
-
-
-
-
 
 
 
@@ -505,21 +539,14 @@ def addObiect(obiekt):
                 else:
                     dodaj_obiekt = dodajObiekt()
                     obiekty.append([i, dodaj_obiekt[0], dodaj_obiekt[1], dodaj_obiekt[2]])
-            saveToCSV(obiekty)
+            save_to_csv("obiekty.csv", obiekty)
             break
         i = i + 1
     else:  # nie ma wolnego
         dodaj_obiekt = dodajObiekt()
         obiekt.append([i, dodaj_obiekt[0], dodaj_obiekt[1], dodaj_obiekt[2]])
-        saveToCSV(obiekt)
+        save_to_csv("obiekty.csv", obiekt)
     print("Zapisanie w lini nr " + str(i))
-
-
-def saveToCSV(obiekty):
-    with open("obiekty.csv", "w", encoding='utf-8', newline='') as file:
-        writer = csv.writer(file, delimiter=',', quotechar='"', quoting=csv.QUOTE_MINIMAL)
-        for i in obiekty:
-            writer.writerow([i[0], i[1], i[2], i[3]])
 
 
 def dodajObiekt():
@@ -568,7 +595,7 @@ def modifyObiekt():
         if int(inputMenu) > 0 and int(inputMenu) <= int(obiekt[-1][0]):
             dodaj_obiekt = dodajObiekt()
             obiekt[int(inputMenu)] = [int(inputMenu), dodaj_obiekt[0], dodaj_obiekt[1], dodaj_obiekt[2]]
-            saveToCSV(obiekt)
+            save_to_csv("obiekty.csv", obiekt)
         elif inputMenu == "0":
             break
 
@@ -591,7 +618,7 @@ def delObiekt():
 
         if int(inputMenu) > 0 and int(inputMenu) <= int(obiekt[-1][0]):
             obiekt[int(inputMenu)] = [int(inputMenu), "", "", ""]
-            saveToCSV(obiekt)
+            save_to_csv("obiekty.csv", obiekt)
         elif inputMenu == "0":
             break
         else:
@@ -602,8 +629,17 @@ def close():
     exit()
 
 
-def intiger(input_, *, is_integer=True, min_=None, max_=None):
-    var = True
+def integer(input_, *, is_integer=True, min_=None, max_=None):
+    """Określa czy argument spełnia wymagania
+
+    :param input_: Sprawdzany input
+    :param is_integer: Czy ma być liczbą całkowitą, jeżeli float ma po przecinku wyłącznie zera, to jest również
+        przyjmowany za int
+    :param min_: dopuszczalna najmniejsza wartość
+    :param max_: dopuszczalna największa wartość
+    :return: lista[1,2], 1 - input w typie int/float lub str jeśli to nie liczba, 2 - wynik sprawdzenia
+    """
+    result = True
 
     try:
         input_ = float(input_)
@@ -618,12 +654,12 @@ def intiger(input_, *, is_integer=True, min_=None, max_=None):
 
     if min_ is not None:
         if input_ < min_:
-            var = False
+            result = False
 
     if max_ is not None:
         if input_ > max_:
-            var = False
-    return input_, var
+            result = False
+    return input_, result
 
 
 if __name__ == "__main__":
