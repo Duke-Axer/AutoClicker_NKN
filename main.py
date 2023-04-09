@@ -26,41 +26,29 @@ def menu(path):
         if input_menu == 1:
             openDict()
         elif input_menu == 2:
-            modifyDict()
+            modify_dict(path)
         elif input_menu == 0:
             close()
 
 
-def firstTest(path):
+def first_test(path):
     print(path)
-    pathGeneral = path + chr(92) + "Data"
+    path_general = path + chr(92) + "Data"
     try:
-        os.chdir(pathGeneral)
+        os.chdir(path_general)
     except:
-        os.mkdir(pathGeneral)
+        os.mkdir(path_general)
     print(os.getcwd())
 
 
 # Otwieranie folderów; do autoclicker
 def openDict():
     clear_cmd()
-    print("Dodawanie, usuwanie i modyfikacja plików\n"
-          "Wybierz folder lub utwórz nowy")
-    listDir = os.listdir(os.getcwd())
-    i = 1
-    for var in listDir:
-        print(str(i) + " --> " + str(var) + "\n")
-        i = i + 1
-    print("-1 -> Utwórz nowy\n"
-          "-2 -> Zmień nazwę\n"
-          "-3 -> Usuń\n"
-          "0 --> Cofnij")
-    inputMenu = input()
+    print("autoclicker")
     pass
 
 
-def modifyDict():
-    path_dir = os.getcwd()
+def modify_dict(path_dir):
 
     while True:
         clear_cmd()
@@ -81,22 +69,19 @@ def modifyDict():
                 print("Opcja: " + str(input_menu[0]) + " nie istnieje, proszę wybrać ponownie")
 
         # Wybierz folder
-        if input_menu <= len(list_dir) and input_menu > 0:
+        if len(list_dir) >= input_menu > 0:
             print("Wybrano folder: " + str(list_dir[input_menu - 1]))
-            modifyFiles(os.chdir(path_dir + chr(92) + str(list_dir[input_menu - 1])))
+            modify_files(os.chdir(path_dir + chr(92) + str(list_dir[input_menu - 1])))
 
         # Utwórz nowy
         elif input_menu == -1:
             make_dir(list_dir, path_dir)
-
         # Zmień nazwę
         elif input_menu == -2:
             rename_dir(path_dir)
-
         # Usuń
         elif input_menu == -3:
             remove_dir(path_dir)
-
         # Cofnij
         elif input_menu == 0:
             break
@@ -122,7 +107,7 @@ def make_dir(list_dir, path_dir):
 
     print("Tworzę nowy folder: " + input_menu)
     os.mkdir(os.path.join(path_dir, input_menu))
-    with open(input_menu + "\obiekty.csv", "w", encoding='utf-8', newline='') as file:
+    with open(input_menu + chr(92) + "obiekty.csv", "w", encoding='utf-8', newline='') as file:
         writer = csv.writer(file, delimiter=',', quotechar='"', quoting=csv.QUOTE_MINIMAL)
         writer.writerow(["ID", "Name", "X", "Y"])
 
@@ -155,10 +140,10 @@ def remove_dir(path_dir):
         return
     # Usuwanie folderu
     else:
-        listDir = os.listdir(path_dir + chr(92) + list_dir[input_menu - 1])
-        listDir.remove("obiekty.csv")
+        list_dir = os.listdir(path_dir + chr(92) + list_dir[input_menu - 1])
+        list_dir.remove("obiekty.csv")
 
-        if not listDir:
+        if not list_dir:
             os.remove(os.path.join(path_dir + chr(92) + list_dir[input_menu - 1], "obiekty.csv"))
             print("Wybrano foder" + list_dir[int(input_menu) - 1])
             os.rmdir(os.getcwd() + chr(92) + list_dir[int(input_menu) - 1])
@@ -172,14 +157,14 @@ def rename_dir(path):
     :param path: Ścieżka z folderami
     :return:
     """
-    listDir = os.listdir(path)
+    list_dir = os.listdir(path)
 
     while True:  # Wybranie folderu
         print("Wybierz który folder ma mieć inną nazwę")
-        print_list(listDir, second=["Cofnij"], last_as_0=True)
+        print_list(list_dir, second=["Cofnij"], last_as_0=True)
 
         while True:  # Wpisanie poprawnej wartości
-            input_menu = integer(input(), min_=0, max_=len(listDir))
+            input_menu = integer(input(), min_=0, max_=len(list_dir))
             if input_menu[1]:
                 input_menu = input_menu[0]
                 break
@@ -190,7 +175,7 @@ def rename_dir(path):
             break
 
         else:
-            print("Wybrano folder: " + str(listDir[input_menu - 1]))
+            print("Wybrano folder: " + str(list_dir[input_menu - 1]))
 
             while True:  # Wpisanie nowej nazwy
                 print("Wpisz nazwę\n0 --> Cofnij")
@@ -198,16 +183,17 @@ def rename_dir(path):
                 if input_name == "0":
                     break
 
-                for i in listDir:
+                for i in list_dir:
                     if input_menu == i:
                         print("Taki folder już istnieje")
                         print("Wybierz inną nazwę")
                         continue
                 else:
                     print("Zmieniam nazwę folderu na: " + input_name)
-                    os.rename(listDir[input_menu - 1], input_name)
+                    os.rename(list_dir[input_menu - 1], input_name)
                     break
         break
+
 
 def rename_sek(path):
     """Zmienia nazwę pliku csv z sekwencją
@@ -253,6 +239,7 @@ def rename_sek(path):
                         os.rename(list_dir[input_menu - 1], input_name + ".csv")
                         break
 
+
 def make_sek(list_dir):
     """Tworzy nową sekwencję
 
@@ -277,6 +264,7 @@ def make_sek(list_dir):
                     writer = csv.writer(file, delimiter=',', quotechar='"', quoting=csv.QUOTE_MINIMAL)
                     writer.writerow(["ID", "Name", "Time", "Number", "Speed", "Mouse"])
                 break
+
 
 def remove_sek(path):
     """Usuwa plik csv (sekwencję)
@@ -305,7 +293,8 @@ def remove_sek(path):
         os.remove(str(list_dir[input_menu - 1]))
         return
 
-def modifyFiles(path):
+
+def modify_files(path):
     while True:
         clear_cmd()
         list_dir = os.listdir(path)
@@ -321,7 +310,6 @@ def modifyFiles(path):
                 break
             else:
                 print("Opcja: " + str(input_menu[0]) + " nie istnieje, proszę wybrać ponownie")
-
 
         if input_menu <= 0:
 
@@ -347,7 +335,7 @@ def modifyFiles(path):
 
 
 # Dodawanie... plików txt z listą kroków do wykonania i lista wykorzystywanych obiektów
-def modify_sek(sek):  # Do zrobienia!!!
+def modify_sek(sek):
     while True:
         clear_cmd()
         print("Dodawanie, usuwanie i modyfikacja sekwencji: ", sek)
@@ -355,7 +343,7 @@ def modify_sek(sek):  # Do zrobienia!!!
         list_sek = gen_list_sek(sek)
 
         print_two_dimensional_list(list_sek)
-        print_list([], second=("Utwórz nowy", "modyfikuj", "zmień kolejność", "Usuń", "Cofnij"), last_as_0=True)
+        print_list([], second=("Utwórz nowy", "zmień kolejność", "Usuń", "Cofnij"), last_as_0=True)
 
         while True:  # Wpisanie poprawnej wartości
             input_menu = integer(input(), min_=-4, max_=0)
@@ -369,6 +357,92 @@ def modify_sek(sek):  # Do zrobienia!!!
             break
         elif input_menu == -1:
             add_item_in_sek(sek)
+        elif input_menu == -2:
+            order_sek(sek)
+        elif input_menu == -3:
+            remove_item_in_sek(list_sek, sek)
+
+
+def order_sek(sek):
+    """Zmienia kolejność wierszy w pliku csv
+
+    :param sek: Ścieżka z plikami csv (sekwencjami)
+    :return: Zapisuje zmieniony plik
+    """
+    while True:
+        list_sek = gen_list_sek(sek)
+        print_two_dimensional_list(list_sek)
+        print_list([], second=["Cofnij"], last_as_0=True)
+
+        print("Wybierz numer")
+        while True:  # Wpisanie poprawnej wartości
+            first = integer(input(), min_=0, max_=len(list_sek) - 1)
+            if first[1]:
+                first = first[0]
+                break
+            else:
+                print("Opcja: " + str(first[0]) + " nie istnieje, proszę wybrać ponownie")
+        if first == 0:
+            break
+
+        print("Wybierz numer")
+        while True:  # Wpisanie poprawnej wartości
+            second = integer(input(), min_=0, max_=len(list_sek) - 1)
+            if second[1]:
+                second = second[0]
+                break
+            else:
+                print("Opcja: " + str(second[0]) + " nie istnieje, proszę wybrać ponownie")
+
+        if second == 0:
+            break
+
+        for item in list_sek:
+            if item[0] == str(first):
+                first = list(item)
+                break
+        for item in list_sek:
+            if item[0] == str(second):
+                list_sek[int(first[0])][1:] = item[1:]
+                list_sek[int(item[0])][1:] = first[1:]
+                break
+
+        save_to_csv(sek, list_sek)
+
+
+def remove_item_in_sek(list_sek, sek):
+    """Usuwa wiersz w pliku csv
+
+    :param list_sek: lista dwuwymiarowa sekwencji
+    :param sek: Ścieżka z plikami csv (sekwencjami)
+    :return: Zapisuje zmieniony plik
+    """
+    print_two_dimensional_list(list_sek)
+    print_list([], second=["Cofnij"], last_as_0=True)
+
+    print("Wybierz wiersz do usunięcia")
+    while True:  # Wpisanie poprawnej wartości
+        del_item = integer(input(), min_=0, max_=len(list_sek) - 1)
+        if del_item[1]:
+            del_item = del_item[0]
+            break
+        else:
+            print("Opcja: " + str(del_item[0]) + " nie istnieje, proszę wybrać ponownie")
+    if del_item == 0:
+        return
+    new_list_sek = []
+    decrement = 0
+    for item in list_sek:
+        if item[0] == "ID":
+            new_list_sek.append(item)
+            continue
+        if item[0] == str(del_item):
+            decrement = -1
+            continue
+
+        new_list_sek.append([str(int(item[0]) + decrement), item[1], item[2], item[3], item[4], item[5]])
+
+        save_to_csv(sek, new_list_sek)
 
 
 def add_item_in_sek(sek):
@@ -779,5 +853,5 @@ def clear_cmd():
 
 if __name__ == "__main__":
     path = os.getcwd()
-    firstTest(path)
+    first_test(path)
     menu(path)
