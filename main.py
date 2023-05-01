@@ -1,7 +1,46 @@
 import pyautogui
 import os
 import csv
+import threading
 
+from pynput import keyboard
+
+global exit_sek
+exit_sek = "a"
+
+def on_press(key):
+    # try:
+    #     print('alphanumeric key {0} pressed'.format(
+    #         key.char))
+    # except AttributeError:
+    #     print('special key {0} pressed'.format(
+    #         key))
+    try:
+        if key.char == "p":
+            global exit_sek
+            exit_sek = "p"
+    except AttributeError:
+        pass
+
+def on_release(key):
+    if key == keyboard.Key.esc:
+        # Stop listener
+        return False
+
+# Collect events until released
+
+
+# ...or, in a non-blocking fashion:
+listener = keyboard.Listener(
+    on_press=on_press,
+    on_release=on_release)
+listener.start()
+
+def aaaa():
+    with keyboard.Listener(
+            on_press=on_press,
+            on_release=on_release) as listener:
+        listener.join()
 
 def menu(path):
     path = path + chr(92) + "Data"
@@ -24,7 +63,7 @@ def menu(path):
         # }
         # switcher[input_menu]
         if input_menu == 1:
-            openDict()
+            open_dict(path)
         elif input_menu == 2:
             modify_dict(path)
         elif input_menu == 0:
@@ -42,14 +81,59 @@ def first_test(path):
 
 
 # Otwieranie folderów; do autoclicker
-def openDict():
+def open_dict(path_dir):
     clear_cmd()
-    print("autoclicker")
-    pass
+    list_dir = os.listdir(path_dir)
+    while True:
+        print("autoclicker")
+        print("Wybierz folder")
+        print_list(first=list_dir, second=["Cofnij"], last_as_0=True)
 
+        # Wpisanie poprawnej wartości
+        while True:
+            input_menu = integer(input(), min_=0, max_=len(list_dir))
+            if input_menu[1]:
+                input_menu = input_menu[0]
+                break
+            else:
+                print("Opcja: " + str(input_menu[0]) + " nie istnieje, proszę wybrać ponownie")
+
+        if input_menu == 0:
+            return 0
+        else:
+            path_sek = os.path.join(path_dir, list_dir[input_menu - 1])
+            print(path_sek)
+            open_sek(path_sek)
+
+def open_sek(path_sek):
+    list_sek = os.listdir(path_sek)
+    list_sek.remove("obiekty.csv")
+
+    while True:
+        print("Wybierz sekwencję\n")
+        print_list(first=list_sek, second=["Cofnij"], last_as_0=True)
+
+        while True:
+            input_menu = integer(input(), min_=0, max_=len(list_sek))
+            if input_menu[1]:
+                input_menu = input_menu[0]
+                break
+            else:
+                print("Opcja: " + str(input_menu[0]) + " nie istnieje, proszę wybrać ponownie")
+
+        if input_menu == 0:
+            return 0
+        else:
+            path_sek = os.path.join(path_sek, list_sek[input_menu - 1])
+            print(path_sek)
+            auto_clicker(path_sek)
+
+def auto_clicker(path_sek):
+    list_arg = gen_list_sek(path_sek)[1:]
+    print(exit_sek)
+    print(list_arg)
 
 def modify_dict(path_dir):
-
     while True:
         clear_cmd()
 
@@ -120,6 +204,7 @@ def remove_dir(path_dir):
         :return:
         """
     clear_cmd()
+    os.chdir(path_dir)
 
     print("Wybrano usunięcie folderu\n"
           "Aby usunąć folder, musi być pusty\n"
@@ -140,13 +225,14 @@ def remove_dir(path_dir):
         return
     # Usuwanie folderu
     else:
-        list_dir = os.listdir(path_dir + chr(92) + list_dir[input_menu - 1])
-        list_dir.remove("obiekty.csv")
-
-        if not list_dir:
+        if not os.listdir(path_dir + chr(92) + list_dir[input_menu - 1]).remove("obiekty.csv"):
             os.remove(os.path.join(path_dir + chr(92) + list_dir[input_menu - 1], "obiekty.csv"))
-            print("Wybrano foder" + list_dir[int(input_menu) - 1])
-            os.rmdir(os.getcwd() + chr(92) + list_dir[int(input_menu) - 1])
+            print(path_dir + chr(92) + list_dir[input_menu - 1])
+            path_dir = str(path_dir + chr(92) + list_dir[input_menu - 1])
+            print(os.getcwd())
+            print("Wybrano foder: " + list_dir[input_menu - 1])
+
+            os.rmdir(path_dir)
         else:
             print("Folder zawiera pliki!")
 
@@ -314,7 +400,7 @@ def modify_files(path):
         if input_menu <= 0:
 
             if input_menu == 0:
-                break
+                return
 
             elif input_menu == -1:
                 make_sek(list_dir)
@@ -854,4 +940,8 @@ def clear_cmd():
 if __name__ == "__main__":
     path = os.getcwd()
     first_test(path)
+    x = threading.Thread(target=aaaa)
+    x.start()
+    # x.join()
+
     menu(path)
